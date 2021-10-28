@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -19,28 +18,30 @@ type Urls struct {
 	UpdatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 }
 
-func CreateUrlTable(db *bun.DB, ctx context.Context) {
+func CreateUrlTable(db *bun.DB, ctx context.Context) string {
 	_, err := db.NewCreateTable().
 		Model((*Urls)(nil)).
 		IfNotExists().
 		Exec(ctx)
 	if err != nil {
-		panic(err)
+		return err.Error()
+	} else {
+		return "Table Created"
 	}
 }
 
-func InsertUrl(db *bun.DB, ctx context.Context, url string) {
+func InsertUrl(db *bun.DB, ctx context.Context, url string) string {
 	rand.Seed(time.Now().UnixNano())
-	shortenedUrl := utils.RandSeq(6)
+	shortenedUrl := ("http://" + utils.RandSeq(6))
 
-	urls := Urls{ID: guuid.New().String(), ShortUrl: "http://" + shortenedUrl, Url: url}
+	urls := Urls{ID: guuid.New().String(), ShortUrl: shortenedUrl, Url: url}
 
 	_, err := db.NewInsert().Model(&urls).Exec(ctx)
 	if err != nil {
-		panic(err)
+		return "Error: Row NOT Created"
+	} else {
+		return shortenedUrl
 	}
-
-	fmt.Println("shortened url: http://" + shortenedUrl)
 }
 
 func GetOriginalUrl(db *bun.DB, ctx context.Context, url string) string {
@@ -49,10 +50,10 @@ func GetOriginalUrl(db *bun.DB, ctx context.Context, url string) string {
 	err := db.NewSelect().Model((*Urls)(nil)).Where("short_url = ?", url).Scan(ctx, &u)
 
 	if err != nil {
-		return "not found"
+		return "Not Found"
+	} else {
+		return u.Url
 	}
-
-	return u.Url
 }
 
 func GetShortUrl(db *bun.DB, ctx context.Context, url string) string {
@@ -61,8 +62,8 @@ func GetShortUrl(db *bun.DB, ctx context.Context, url string) string {
 	err := db.NewSelect().Model((*Urls)(nil)).Where("url = ?", url).Scan(ctx, &u)
 
 	if err != nil {
-		return "not found"
+		return "Not Found"
+	} else {
+		return u.ShortUrl
 	}
-
-	return u.ShortUrl
 }
