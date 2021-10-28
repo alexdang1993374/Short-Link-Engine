@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/alexdang1993374/short-link-engine/config"
@@ -15,5 +16,15 @@ func main() {
 	// Only creates table if it doesn't exist already
 	controllers.CreateUrlTable(db, ctx)
 
-	controllers.InsertUrl(db, ctx, os.Args[1])
+	originalUrl := controllers.GetOriginalUrl(db, ctx, os.Args[1])
+
+	shortUrl := controllers.GetShortUrl(db, ctx, os.Args[1])
+
+	if originalUrl != "not found" {
+		fmt.Println("original url:", originalUrl)
+	} else if shortUrl != "not found" {
+		fmt.Println("shortened url: http://" + shortUrl)
+	} else {
+		controllers.InsertUrl(db, ctx, os.Args[1])
+	}
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type Url struct {
+type Urls struct {
 	ID        string
 	ShortUrl  string
 	Url       string
@@ -21,7 +21,7 @@ type Url struct {
 
 func CreateUrlTable(db *bun.DB, ctx context.Context) {
 	_, err := db.NewCreateTable().
-		Model((*Url)(nil)).
+		Model((*Urls)(nil)).
 		IfNotExists().
 		Exec(ctx)
 	if err != nil {
@@ -33,16 +33,36 @@ func InsertUrl(db *bun.DB, ctx context.Context, url string) {
 	rand.Seed(time.Now().UnixNano())
 	shortenedUrl := utils.RandSeq(6)
 
-	urls := Url{ID: guuid.New().String(), ShortUrl: "host://" + shortenedUrl, Url: url}
+	urls := Urls{ID: guuid.New().String(), ShortUrl: "http://" + shortenedUrl, Url: url}
 
 	_, err := db.NewInsert().Model(&urls).Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("shortened url: host://" + shortenedUrl)
+	fmt.Println("shortened url: http://" + shortenedUrl)
 }
 
-func CheckUrl(db *bun.DB, ctx context.Context, url string) {
+func GetOriginalUrl(db *bun.DB, ctx context.Context, url string) string {
+	u := Urls{}
 
+	err := db.NewSelect().Model((*Urls)(nil)).Where("short_url = ?", url).Scan(ctx, &u)
+
+	if err != nil {
+		return "not found"
+	}
+
+	return u.Url
+}
+
+func GetShortUrl(db *bun.DB, ctx context.Context, url string) string {
+	u := Urls{}
+
+	err := db.NewSelect().Model((*Urls)(nil)).Where("url = ?", url).Scan(ctx, &u)
+
+	if err != nil {
+		return "not found"
+	}
+
+	return u.ShortUrl
 }
