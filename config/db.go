@@ -28,7 +28,7 @@ func Connect() *bun.DB {
 			pgdriver.WithDSN(dsn),
 			pgdriver.WithAddr("localhost:5432"),
 			pgdriver.WithUser("postgres"),
-			pgdriver.WithPassword(goDotEnvVariable("PASSWORD")),
+			pgdriver.WithPassword("CC1993374"),
 			pgdriver.WithDatabase("links"),
 		),
 	)

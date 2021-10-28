@@ -20,11 +20,11 @@ func main() {
 
 	shortUrl := controllers.GetShortUrl(db, ctx, os.Args[1])
 
-	if originalUrl != "not found" {
+	if originalUrl != "Not Found" {
 		fmt.Println("original url:", originalUrl)
-	} else if shortUrl != "not found" {
+	} else if shortUrl != "Not Found" {
 		fmt.Println("shortened url:", shortUrl)
 	} else {
-		controllers.InsertUrl(db, ctx, os.Args[1])
+		fmt.Println("shortened url:", controllers.InsertUrl(db, ctx, os.Args[1]))
 	}
 }
