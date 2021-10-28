@@ -23,7 +23,7 @@ func main() {
 	if originalUrl != "not found" {
 		fmt.Println("original url:", originalUrl)
 	} else if shortUrl != "not found" {
-		fmt.Println("shortened url: http://" + shortUrl)
+		fmt.Println("shortened url:", shortUrl)
 	} else {
 		controllers.InsertUrl(db, ctx, os.Args[1])
 	}
