@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"os"
+
+	"github.com/alexdang1993374/short-link-engine/controllers"
+)
 
 func main() {
-	fmt.Println("Hello Go URL Shortener !🚀")
+	controllers.CreateUrlTable()
+	controllers.InsertUrl(os.Args[1])
 }
