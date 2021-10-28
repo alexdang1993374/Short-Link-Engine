@@ -6,9 +6,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/alexdang1993374/short-link-engine/config"
 	"github.com/alexdang1993374/short-link-engine/utils"
 	guuid "github.com/google/uuid"
+	"github.com/uptrace/bun"
 )
 
 type Url struct {
@@ -19,10 +19,7 @@ type Url struct {
 	UpdatedAt time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 }
 
-func CreateUrlTable() {
-	ctx := context.Background()
-	db := config.Connect()
-
+func CreateUrlTable(db *bun.DB, ctx context.Context) {
 	_, err := db.NewCreateTable().
 		Model((*Url)(nil)).
 		IfNotExists().
@@ -32,10 +29,7 @@ func CreateUrlTable() {
 	}
 }
 
-func InsertUrl(url string) {
-	ctx := context.Background()
-	db := config.Connect()
-
+func InsertUrl(db *bun.DB, ctx context.Context, url string) {
 	rand.Seed(time.Now().UnixNano())
 	shortenedUrl := utils.RandSeq(6)
 
@@ -47,4 +41,8 @@ func InsertUrl(url string) {
 	}
 
 	fmt.Println("shortened url: host://" + shortenedUrl)
+}
+
+func CheckUrl(db *bun.DB, ctx context.Context, url string) {
+
 }
